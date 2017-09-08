@@ -65,7 +65,8 @@ class User
     }
     public function setPassword($password)
     {
-        $this->password = $password;
+        //Простой пароль
+        $this->password = md5($password);
     }
 
     public function setCreated(){

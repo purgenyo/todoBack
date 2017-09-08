@@ -4,11 +4,10 @@ namespace app;
 
 class App
 {
-
     private static $_instance;
     private static $_entity_manager;
 
-    public static function init( array $config = [] ){
+    public static function init(){
         self::$_instance = new App();
     }
 
@@ -16,7 +15,6 @@ class App
         if(is_null(self::$_instance)){
             self::init();
         }
-
         return self::$_instance;
     }
 
