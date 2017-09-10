@@ -4,7 +4,7 @@ namespace app\controllers;
 
 use app\App;
 use app\core\Request;
-use app\DoctrineModels\User as UserModel;
+use app\doctrineModels\User as UserModel;
 
 /**
  * Class User
@@ -12,7 +12,6 @@ use app\DoctrineModels\User as UserModel;
  */
 class User
 {
-
     public $actionMap = [
         'registration'=>'POST',
         'login'=>'POST',
@@ -27,16 +26,13 @@ class User
         $user = new UserModel();
         $user->setUsername($username);
         $user->setPassword($password);
-        $user->setCreated();
         /** @var \Doctrine\ORM\EntityManager $entManager */
         $entManager = App::getDoctrineEntityManager();
         try {
             $entManager->persist($user);
             $entManager->flush();
         } catch (\Exception $dbError){
-            if($dbError->getErrorCode()==1062){
-                throw new \Exception('Пользователь уже существует');
-            }
+            throw new \Exception($dbError->getMessage());
         }
 
         return ['username'=>$user->getUsername(), 'token'=>$user->getToken()];
@@ -46,7 +42,6 @@ class User
         $user = new UserModel();
         $user->setUsername('root');
         $user->setPassword('user');
-        $user->setCreated();
         /** @var \Doctrine\ORM\EntityManager $entManager */
         $entManager = App::getDoctrineEntityManager();
         $entManager->persist($user);
@@ -60,7 +55,6 @@ class User
         $entManager = App::getDoctrineEntityManager();
         $user = $entManager->find("app\\DoctrineModels\\User", (int)8);
         $user->setToken();
-        $user->setUpdated();
         $entManager->persist($user);
         $entManager->flush();
         $result = ['username'=>$user->getUsername(), 'token'=>$user->getToken()];

@@ -1,15 +1,15 @@
 <?php
 
-namespace app\DoctrineModels;
+namespace app\doctrineModels;
 
 /**
  * @Entity @Table(name="users")
  */
-class User
+class User extends BaseDoctrineModel
 {
     /**
      * @Id @GeneratedValue @Column(type="integer")
-     * @var string
+     * @var integer
      */
     protected $user_id;
 
@@ -30,19 +30,9 @@ class User
      * @var string
      */
     protected $token;
-
-    /**
-     * @Column(type="datetime")
-     */
-    protected $created;
-
-    /**
-     * @Column(type="datetime", nullable = true)
-     */
-    protected $updated;
-
+    
     public function __construct(){
-
+        parent::__construct();
     }
 
     public function getId()
@@ -54,6 +44,7 @@ class User
     {
         return $this->username;
     }
+    
     public function setUsername($username)
     {
         $this->username = $username;
@@ -63,45 +54,17 @@ class User
     {
         return $this->password;
     }
+    
     public function setPassword($password)
     {
-        //Простой пароль
         $this->password = md5($password);
     }
 
-    public function setCreated(){
-        $this->created = new \DateTime();
-    }
-    public function getCreated(){
-        return $this->created;
-    }
-
-    public function setUpdated(){
-        $this->updated = new \DateTime();;
-    }
-    public function getUpdated(){
-        return $this->updated;
-    }
-
     public function setToken(){
-        //Простая генерация токена
         $this->token = sha1(md5(rand(0, 50000)));
     }
+    
     public function getToken(){
         return $this->token;
-    }
-
-    /** @PreFlush */
-    public function onPrePersist()
-    {
-        //TODO: Починить
-        $this->created = new \DateTime("now");
-    }
-
-    /** @PreUpdate */
-    public function onPreUpdate()
-    {
-        //TODO: Починить
-        $this->updated = new \DateTime("now");
     }
 }

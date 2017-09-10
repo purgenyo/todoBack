@@ -13,7 +13,7 @@ class RequestRouter
     private $_default_actions = [
         'GET' =>'read',
         'POST' =>'create',
-        'UPDATE' =>'update',
+        'PUT' =>'update',
         'DELETE' =>'delete'
     ];
 
@@ -28,7 +28,7 @@ class RequestRouter
     ];
 
     /** HTTP URL запроса */
-    private $_path_info;
+    private $_path_info = '';
 
     /** HTTP Метод */
     private $_method;
@@ -38,23 +38,22 @@ class RequestRouter
         $this->_setPathInfo();
 
         try {
-            $result = $this->_process();
+            $result['data'] = $this->_process();
+            if(empty($result['status'])){
+                $result['status'] = http_response_code();
+            }
         } catch (\Exception $e){
             $result = [];
-            http_response_code(400);
+            $result['status'] = 400;
             $result['error'] = $e->getMessage();
         }
 
-        if(!empty($result['status'])){
-            http_response_code($result['status']);
-        } else {
-            $result['status'] = http_response_code();
+        if(!in_array($result['status'], $this->httpStatuses)){
+            $result['status'] = $this->default_status;
         }
 
-        if(empty(!in_array($result['status'], $this->httpStatuses))){
-            http_response_code($this->default_status);
-        }
-
+        http_response_code($result['status']);
+        header('Content-Type: application/json');
         echo json_encode($result);
         die;
     }
@@ -64,15 +63,21 @@ class RequestRouter
     }
 
     private function _setPathInfo(){
-        $this->_path_info = $_SERVER['PATH_INFO'];
+        if(!empty($_SERVER['PATH_INFO'])){
+            $this->_path_info = $_SERVER['PATH_INFO'];
+        }
     }
 
     //Простой роутер
     private function _process(){
         $pattern = '/(\/)(.*)(\/|)/';
         preg_match($pattern, $this->_path_info, $result);
-        $parts = explode('/', $result[2]);
 
+        if(empty($result[2])){
+            throw new \Exception('Ошибка обработки запроса');
+        }
+
+        $parts = explode('/', $result[2]);
         if(empty($parts[0])){
             throw new \Exception('Ошибка обработки запроса');
         }
@@ -118,7 +123,7 @@ class RequestRouter
 
     private function _getDefaultActionByMethod(){
         if(empty($this->_default_actions[$this->_method])){
-            return ['error'=>'Ошибка запроса'];
+            throw new \Exception('Метод не найден');
         }
         return $this->_default_actions[$this->_method];
     }
