@@ -27,7 +27,7 @@ $config = Setup::createAnnotationMetadataConfiguration($doctrineModelDirs, $isDe
 $dbParams = array(
     'driver'   => 'pdo_mysql',
     'user'     => 'root',
-    'password' => '',
+    'password' => 'root',
     'dbname'   => 'todo',
 );
 $entityManager = \Doctrine\ORM\EntityManager::create($dbParams, $config);

@@ -37,11 +37,7 @@ class RequestRouter
     {
         $this->_setMethod();
         $this->_setPathInfo();
-        $this->_configureRoute();
     }
-
-    private $_controller = '';
-    private $_action = '';
 
     /** HTTP URL запроса */
     private $_path_info = '';
@@ -49,7 +45,7 @@ class RequestRouter
     /** HTTP Метод */
     private $_method;
 
-    public function _configureRoute(){
+    private function _getRoute(){
         $collections = $this->createRouteCollections();
 
         $controller = '';
@@ -59,22 +55,15 @@ class RequestRouter
             $controller = $url_api_parts[0];
         }
 
-        if(!empty($collections[$controller])){
-            $controller_collection = $collections[$controller];
+        if(empty($collections[$controller])){
+            throw new \Exception('Невозможно обработать запрос');
         }
+
+        $controller_collection = $collections[$controller];
         $context = $this->getContext();
-
-        $matcher = new UrlMatcher($collections, $context);
-
-        $parameters_1 = $matcher->match('/todo/4/');
-        $parameters_2 = $matcher->match('/todo/');
-
-        $controller = '';
-        $router_map = App::getRouterConfig();
-        if(!empty($router_map[$controller][$this->_method])){
-            $controller_config = $router_map[$controller][$this->_method];
-            $a = 1;
-        }
+        $matcher = new UrlMatcher($controller_collection, $context);
+        $result_request = '/' . $this->_path_info;
+        return $matcher->match( $result_request );
     }
 
     public function getContext(){
@@ -89,7 +78,10 @@ class RequestRouter
             foreach ($controller_methods as $method => $actions){
                 foreach ($actions as $url => $action){
                     $result = $this->getParams($url);
-                    $result_url = $controller_id . '/' . $result['parts'];
+                    $result_url = $controller_id;
+                    if(!empty($result['parts'])){
+                        $result_url .= '/' . $result['parts'];
+                    }
                     $route = new Route(
                         $result_url,
                         ['_controller' => ucfirst($controller_id)],
@@ -109,20 +101,17 @@ class RequestRouter
 
     private function getParams( $match_str ){
         $url_parts = explode('/', $match_str);
-
         $result_params_parts = [];
         $requirements = [];
-
         foreach ($url_parts as $part){
-            $regexp_paramats = explode(':', $part);
-            if(count($regexp_paramats)==2){
-                $requirements[$regexp_paramats[0]] = $regexp_paramats[1];
-                $result_params_parts[] =  '{' . $regexp_paramats[0] . '}';
-            } elseif(count($regexp_paramats)==1) {
-                $result_params_parts[] = $regexp_paramats[0];
+            $regexp_params = explode(':', $part);
+            if(count($regexp_params)==2){
+                $requirements[$regexp_params[0]] = $regexp_params[1];
+                $result_params_parts[] =  '{' . $regexp_params[0] . '}';
+            } elseif(count($regexp_params)==1) {
+                $result_params_parts[] = $regexp_params[0];
             }
         }
-
         $result['requirements'] = $requirements;
         $result['parts'] = implode('/', $result_params_parts);
         return $result;
@@ -162,69 +151,30 @@ class RequestRouter
         }
     }
 
-    //Простой роутер
     private function _process(){
-        $pattern = '/(\/)(.*)(\/|)/';
-        preg_match($pattern, $this->_path_info, $result);
-
-        if(empty($result[2])){
-            throw new \Exception('Ошибка обработки запроса');
-        }
-
-        $parts = explode('/', $result[2]);
-        if(empty($parts[0])){
-            throw new \Exception('Ошибка обработки запроса');
-        }
-
-        if(empty($parts[1])){
-            $parts[1] = null;
-        }
-
-
-        return $this->runAction($parts[0], $parts[1]);
+        $route = $this->_getRoute();
+        $params = $this->_getParamsFromRouter($route);
+        return $this->runAction($route['_controller'], $route['_route'], $params);
     }
 
-    private function runAction($controller, $action){
+    private function _getParamsFromRouter($params){
+        unset($params['_controller']);
+        unset($params['_route']);
+        return $params;
+    }
 
-        if(empty($action)){
-            $action = $this->_getDefaultActionByMethod();
-        }
+    private function runAction($controller, $action, $params = []){
 
-        $className = '\app\Controllers\\' . ucfirst($controller);
+        $className = '\app\Controllers\\' . $controller;
         if(!class_exists($className)){
-            throw new \Exception('Ошибка запроса');
+            throw new \Exception('Контроллер не найден');
         }
 
         $class = new $className;
         if(!method_exists($class, $action)){
-            throw new \Exception('Ошибка обработки метода запроса');
+            throw new \Exception('Метод не существует');
         }
 
-        if(!$this->_isMethodAllow($class, $action)){
-            http_response_code(405);
-            throw new \Exception('Метод не разрешён');
-        }
-
-        return call_user_func([$class, $action]);
-    }
-
-    private function _isMethodAllow($class, $action){
-        if(empty($class->actionMap[$action])){
-            return false;
-        }
-
-        $action_method = $class->actionMap[$action];
-
-        if($this->_method!==$action_method){
-            return false;
-        }
-        return true;
-    }
-
-    private function _getDefaultActionByMethod(){
-        if(empty($this->_default_actions[$this->_method])){
-            throw new \Exception('Метод не найден');
-        }
-        return $this->_default_actions[$this->_method];
+        return call_user_func_array([$class, $action], $params);
     }
 }
