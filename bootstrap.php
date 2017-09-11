@@ -27,8 +27,10 @@ $config = Setup::createAnnotationMetadataConfiguration($doctrineModelDirs, $isDe
 $dbParams = array(
     'driver'   => 'pdo_mysql',
     'user'     => 'root',
-    'password' => 'root',
+    'password' => '',
     'dbname'   => 'todo',
 );
 $entityManager = \Doctrine\ORM\EntityManager::create($dbParams, $config);
+$router_config = require (__DIR__ . "/config/route_config.php");
 App::setDoctrineEntityManager($entityManager);
+App::setRouterConfig($router_config);

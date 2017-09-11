@@ -1,10 +1,6 @@
 {
     "require": {
-        "doctrine/orm": "*"
-    },
-    "autoload": {
-        "psr-0": {
-            "core": "core"
-        }
+        "doctrine/orm": "*",
+        "symfony/routing": "^3.3"
     }
 }

@@ -13,10 +13,12 @@ class Todo
     public $actionMap = [
         'read'=>'GET',
         'create'=>'POST',
-        'update'=>'PUT'
+        'update'=>'PUT',
+        'delete'=>'DELETE',
     ];
 
-    public function read(){
+    public function read()
+    {
         /** @var QueryBuilder $builder */
         $builder = App::getDoctrineEntityManager()->createQueryBuilder();
         $result = $builder->select('p')
@@ -26,23 +28,31 @@ class Todo
         return $result;
     }
 
-    function create(){
+    function create()
+    {
         $todo = new TodoModel();
         $todo->setAttributes(Request::getRequest());
         /** @var \Doctrine\ORM\EntityManager $entManager */
         $entManager = App::getDoctrineEntityManager();
         $entManager->persist($todo);
         $entManager->flush();
-        return $todo;
+        return $todo->getAttributes();
     }
 
-    function update(){
+    function update()
+    {
         $todo = new TodoModel();
         $todo->setAttributes(Request::getRequest());
         /** @var \Doctrine\ORM\EntityManager $entManager */
         $entManager = App::getDoctrineEntityManager();
         $entManager->merge($todo);
         $entManager->flush();
-        return (array)$todo;
+        return $todo->getAttributes();
     }
+
+    function delete()
+    {
+        return [];
+    }
+
 }

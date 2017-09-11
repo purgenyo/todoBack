@@ -35,6 +35,11 @@ class Todo extends BaseDoctrineModel
      */
     protected $user;
 
+    public function getTodo_id()
+    {
+        return $this->todo_id;
+    }
+
     public function setText($text)
     {
         $this->text = $text;

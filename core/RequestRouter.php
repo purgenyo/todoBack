@@ -2,6 +2,12 @@
 
 namespace app\core;
 
+use app\App;
+use Symfony\Component\Routing\Matcher\UrlMatcher;
+use Symfony\Component\Routing\RequestContext;
+use Symfony\Component\Routing\Route;
+use Symfony\Component\Routing\RouteCollection;
+
 /**
  * Класс осуществляет необходимую маршрутизацию
  *
@@ -27,15 +33,102 @@ class RequestRouter
         405  // Method Not Allowed
     ];
 
+    function __construct()
+    {
+        $this->_setMethod();
+        $this->_setPathInfo();
+        $this->_configureRoute();
+    }
+
+    private $_controller = '';
+    private $_action = '';
+
     /** HTTP URL запроса */
     private $_path_info = '';
 
     /** HTTP Метод */
     private $_method;
 
+    public function _configureRoute(){
+        $collections = $this->createRouteCollections();
+
+        $controller = '';
+        $url_api_parts = explode('/', $this->_path_info);
+
+        if(isset($url_api_parts[0])){
+            $controller = $url_api_parts[0];
+        }
+
+        if(!empty($collections[$controller])){
+            $controller_collection = $collections[$controller];
+        }
+        $context = $this->getContext();
+
+        $matcher = new UrlMatcher($collections, $context);
+
+        $parameters_1 = $matcher->match('/todo/4/');
+        $parameters_2 = $matcher->match('/todo/');
+
+        $controller = '';
+        $router_map = App::getRouterConfig();
+        if(!empty($router_map[$controller][$this->_method])){
+            $controller_config = $router_map[$controller][$this->_method];
+            $a = 1;
+        }
+    }
+
+    public function getContext(){
+        return  new RequestContext('/', $this->_method);
+    }
+
+    public function createRouteCollections(){
+        $router_map = App::getRouterConfig();
+        $routers_collections = [];
+        foreach ($router_map as $controller_id => $controller_methods){
+            $routes = new RouteCollection();
+            foreach ($controller_methods as $method => $actions){
+                foreach ($actions as $url => $action){
+                    $result = $this->getParams($url);
+                    $result_url = $controller_id . '/' . $result['parts'];
+                    $route = new Route(
+                        $result_url,
+                        ['_controller' => ucfirst($controller_id)],
+                        $result['requirements'],
+                        [],
+                        '',
+                        [],
+                        [$method]
+                    );
+                    $routes->add($action, $route);
+                }
+            }
+            $routers_collections[$controller_id] = $routes;
+        }
+        return $routers_collections;
+    }
+
+    private function getParams( $match_str ){
+        $url_parts = explode('/', $match_str);
+
+        $result_params_parts = [];
+        $requirements = [];
+
+        foreach ($url_parts as $part){
+            $regexp_paramats = explode(':', $part);
+            if(count($regexp_paramats)==2){
+                $requirements[$regexp_paramats[0]] = $regexp_paramats[1];
+                $result_params_parts[] =  '{' . $regexp_paramats[0] . '}';
+            } elseif(count($regexp_paramats)==1) {
+                $result_params_parts[] = $regexp_paramats[0];
+            }
+        }
+
+        $result['requirements'] = $requirements;
+        $result['parts'] = implode('/', $result_params_parts);
+        return $result;
+    }
+
     public function run(){
-        $this->_setMethod();
-        $this->_setPathInfo();
 
         try {
             $result['data'] = $this->_process();
@@ -65,7 +158,7 @@ class RequestRouter
 
     private function _setPathInfo(){
         if(!empty($_SERVER['PATH_INFO'])){
-            $this->_path_info = $_SERVER['PATH_INFO'];
+            $this->_path_info = trim($_SERVER['PATH_INFO'], '/');
         }
     }
 
@@ -87,10 +180,12 @@ class RequestRouter
             $parts[1] = null;
         }
 
+
         return $this->runAction($parts[0], $parts[1]);
     }
 
     private function runAction($controller, $action){
+
         if(empty($action)){
             $action = $this->_getDefaultActionByMethod();
         }
@@ -114,11 +209,15 @@ class RequestRouter
     }
 
     private function _isMethodAllow($class, $action){
-        $action_method = $class->actionMap[$action];
-        if($this->_method!==$action_method){
+        if(empty($class->actionMap[$action])){
             return false;
         }
 
+        $action_method = $class->actionMap[$action];
+
+        if($this->_method!==$action_method){
+            return false;
+        }
         return true;
     }
 

@@ -79,7 +79,7 @@ class BaseDoctrineModel
         return $this->updated;
     }
 
-    function setAttributes($request_attributes){
+    public function setAttributes($request_attributes){
         $em_attributes = App::getDoctrineEntityManager()
             ->getClassMetadata(get_class($this))
             ->getColumnNames();
@@ -92,7 +92,21 @@ class BaseDoctrineModel
                 }
             }
         }
+    }
 
+    public function getAttributes(){
+        $em_attributes = App::getDoctrineEntityManager()
+            ->getClassMetadata(get_class($this))
+            ->getColumnNames();
+        $attributes = [];
+        foreach ($em_attributes as $field => $attribute){
+            $getter = 'get'.ucfirst($attribute);
+
+            if(method_exists($this, $getter)){
+                $attributes[$attribute] = $this->$getter();
+            }
+        }
+        return $attributes;
     }
 
 }

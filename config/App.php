@@ -6,6 +6,7 @@ class App
 {
     private static $_instance;
     private static $_entity_manager;
+    private static $_router_config;
 
     public static function init(){
         self::$_instance = new App();
@@ -32,6 +33,17 @@ class App
             throw new \Exception('Ошибка');
         }
         return self::$_entity_manager;
+    }
+
+    private function getRouterConfig(){
+        if(empty(self::$_router_config)){
+            throw new \Exception('Ошибка. Необходимо настроить роутер');
+        }
+        return self::$_router_config;
+    }
+
+    private function setRouterConfig( $router_config ){
+        self::$_router_config = $router_config;
     }
 
 }
