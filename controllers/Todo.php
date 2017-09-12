@@ -7,7 +7,7 @@ use app\App;
 use app\core\Request;
 use app\doctrineModels\Todo as TodoModel;
 
-class Todo extends BaseController
+class Todo
 {
 
     public function read()
@@ -29,13 +29,12 @@ class Todo extends BaseController
 
     public function readOne( $todo_id )
     {
-        /** @var \Doctrine\ORM\EntityManager $entManager */
-        $entManager = App::getDoctrineEntityManager();
-        $todo = $entManager->find('app\doctrineModels\Todo', $todo_id);
-        if(empty($todo)){
+        $model = new TodoModel();
+        $model = $model->findByPrimary( $todo_id );
+        if(empty($model)){
             return [];
         } else {
-            return $todo->getAttributes();
+            return $model->getAttributes();
         }
     }
 
@@ -57,7 +56,13 @@ class Todo extends BaseController
 
     function delete( $todo_id )
     {
-        return $todo_id;
+        $model = new TodoModel();
+        $model = $model->findByPrimary( $todo_id );
+        /** @var \Doctrine\ORM\EntityManager $em */
+        $em = App::getDoctrineEntityManager();
+        $em->remove($model);
+        $em->flush();
+        return true;
     }
 
 

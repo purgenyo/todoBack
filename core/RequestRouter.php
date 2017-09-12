@@ -16,12 +16,6 @@ use Symfony\Component\Routing\RouteCollection;
  */
 class RequestRouter
 {
-    private $_default_actions = [
-        'GET' =>'read',
-        'POST' =>'create',
-        'PUT' =>'update',
-        'DELETE' =>'delete'
-    ];
 
     private $default_status = 200;
 
@@ -90,7 +84,7 @@ class RequestRouter
                         [],
                         '',
                         [],
-                        [$method, 'OPTIONS']
+                        [$method]
                     );
                     $routes->add($action, $route);
                 }
@@ -121,6 +115,12 @@ class RequestRouter
     public function run(){
 
         try {
+            if($this->_method=='OPTIONS'){
+                header('Access-Control-Allow-Methods: PUT, GET, POST, DELETE, OPTIONS');
+                header('Access-Control-Allow-Origin: *');
+                header('Content-Type: application/json');
+                die;
+            }
             $result['data'] = $this->_process();
             if(empty($result['status'])){
                 $result['status'] = http_response_code();
@@ -136,8 +136,10 @@ class RequestRouter
         }
 
         http_response_code($result['status']);
+        header('Access-Control-Allow-Methods: PUT, GET, POST, DELETE, OPTIONS');
         header('Access-Control-Allow-Origin: *');
         header('Content-Type: application/json');
+
         echo json_encode($result);
         die;
     }

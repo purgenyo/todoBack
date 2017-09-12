@@ -2,7 +2,7 @@
 
 
 namespace app\doctrineModels;
-
+use app\App;
 
 
 /**
@@ -57,5 +57,11 @@ class Todo extends BaseDoctrineModel
 
     public function getStatus(){
         return $this->status;
+    }
+
+    public function findByPrimary($id){
+        /** @var \Doctrine\ORM\EntityManager $entManager */
+        $entManager = App::getDoctrineEntityManager();
+        return $entManager->find(get_class($this), $id);
     }
 }

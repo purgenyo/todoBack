@@ -7,7 +7,6 @@ use Doctrine\ORM\Tools\Setup;
 require_once "vendor/autoload.php";
 
 require_once __DIR__ . "/doctrineModels/BaseDoctrineModel.php";
-require_once __DIR__ . "/controllers/BaseController.php";
 require_once __DIR__ . "/config/App.php";
 require_once __DIR__ . "/controllers/User.php";
 require_once __DIR__ . "/controllers/Todo.php";
