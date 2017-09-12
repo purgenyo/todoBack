@@ -37,6 +37,7 @@ class RequestRouter
     {
         $this->_setMethod();
         $this->_setPathInfo();
+
     }
 
     /** HTTP URL запроса */
@@ -89,7 +90,7 @@ class RequestRouter
                         [],
                         '',
                         [],
-                        [$method]
+                        [$method, 'OPTIONS']
                     );
                     $routes->add($action, $route);
                 }

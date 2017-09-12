@@ -14,7 +14,8 @@ class Todo
     {
         /** @var \Doctrine\ORM\EntityManager $entManager */
         $entManager = App::getDoctrineEntityManager();
-        $todo = $entManager->getRepository('app\doctrineModels\Todo')->findBy(['status'=>1]);
+        $todo = $entManager->getRepository('app\doctrineModels\Todo')
+            ->findBy(['status'=>1], ['todo_id'=>'DESC']);
         if(empty($todo)){
             return [];
         } else {

@@ -11,7 +11,7 @@ namespace app\core;
 class Request
 {
     public static function getRequest(){
-        if($_SERVER['CONTENT_TYPE']=='application/json'){
+        if(preg_match('/(application\/json)/', $_SERVER['CONTENT_TYPE'])!==false){
             $inputJSON = file_get_contents('php://input');
             $inputJSON = json_decode($inputJSON, true);
             if(empty($inputJSON)){
