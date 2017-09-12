@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit bootstrap="../bootstrap.php" colors="true">
+	<testsuites>
+		<testsuite name="Models">
+			<file>models/BaseModelTest.php</file>
+			<file>models/TodoModelTest.php</file>
+		</testsuite>
+	</testsuites>
+
+	<logging>
+		<log
+		type="coverage-html"
+		target="coverage"
+		title="PHPUnit"
+		charset="UTF-8"
+		yui="true"
+		highlight="true"
+		lowUpperBound="35"
+		highLowerBound="90"
+		/>
+	</logging>
+
+	<filter>
+		<blacklist>
+			<directory suffix=".php">../vendor</directory>
+			<directory suffix=".php">../tests</directory>
+		</blacklist>
+		<whitelist>
+			<directory suffix=".php">../core</directory>
+			<directory suffix=".php">../config</directory>
+			<directory suffix=".php">../controllers</directory>
+			<directory suffix=".php">../doctrineModels</directory>
+		</whitelist>
+	</filter>
+</phpunit>
