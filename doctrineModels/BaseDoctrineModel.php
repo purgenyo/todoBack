@@ -59,22 +59,22 @@ class BaseDoctrineModel
         return $this->updated;
     }
 
-    private function setCreated()
+    public function setCreated()
     {
         $this->created = new \DateTime();
     }
 
-    protected function getCreated()
+    public function getCreated()
     {
         return $this->created;
     }
 
-    private function setUpdated()
+    public function setUpdated()
     {
         $this->updated = new \DateTime();;
     }
 
-    protected function getUpdated()
+    public function getUpdated()
     {
         return $this->updated;
     }

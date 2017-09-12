@@ -31,7 +31,7 @@ class Todo extends BaseDoctrineModel
 
     /**
      * @OneToOne(targetEntity="User")
-     * @JoinColumn(name="user_id", referencedColumnName="user_id")
+     * @JoinColumn(name="user_id", referencedColumnName="user_id", nullable=false)
      */
     protected $user;
 

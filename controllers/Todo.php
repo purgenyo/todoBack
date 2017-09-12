@@ -5,9 +5,9 @@ namespace app\controllers;
 //TODO: Перенести все методы в базовый контроллер
 use app\App;
 use app\core\Request;
-use Doctrine\ORM\Query;
 use app\doctrineModels\Todo as TodoModel;
-class Todo
+
+class Todo extends BaseController
 {
 
     public function read()
