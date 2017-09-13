@@ -42,10 +42,7 @@ class Todo
     {
         $todo = new TodoModel();
         $todo->setAttributes(Request::getRequest());
-        /** @var \Doctrine\ORM\EntityManager $entManager */
-        $entManager = App::getDoctrineEntityManager();
-        $entManager->persist($todo);
-        $entManager->flush();
+        $todo->save();
         return $todo->getAttributes();
     }
 
@@ -56,23 +53,15 @@ class Todo
         if(empty($model)){
             return false;
         }
-        /** @var \Doctrine\ORM\EntityManager $em */
-        $em = App::getDoctrineEntityManager();
         $model->setAttributes(Request::getRequest());
-        $em->merge($model);
-        $em->flush();
+        $model->save();
         return $model->getAttributes();
     }
 
     function delete( $todo_id )
     {
         $model = new TodoModel();
-        $model = $model->findByPrimary( $todo_id );
-        /** @var \Doctrine\ORM\EntityManager $em */
-        $em = App::getDoctrineEntityManager();
-        $em->remove($model);
-        $em->flush();
-        return true;
+        return $model->deleteByPrimary($todo_id);
     }
 
 

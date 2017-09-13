@@ -15,7 +15,7 @@ class Todo extends BaseDoctrineModel
     public function allowSet(){
         $allow_set = parent::allowSet();
         $allow_set[] = 'text';
-        $allow_set[] = 'user';
+        $allow_set[] = 'status';
         $allow_set[] = 'status';
         return $allow_set;
     }
@@ -25,6 +25,7 @@ class Todo extends BaseDoctrineModel
         $allow_get = parent::allowGet();
         $allow_get[] = 'todo_id';
         $allow_get[] = 'text';
+        $allow_get[] = 'user';
         $allow_get[] = 'status';
         return $allow_get;
     }
@@ -50,14 +51,30 @@ class Todo extends BaseDoctrineModel
     protected $status = 1;
 
     /**
+     * @var int
+     * @Column(name="is_editable", type="smallint", nullable=false, options={"default": 1})
+     */
+    protected $isEditable = 1;
+
+    /**
      * @OneToOne(targetEntity="User")
-     * @JoinColumn(name="user_id", referencedColumnName="user_id", nullable=true)
+     * @JoinColumn(name="user_id", referencedColumnName="user_id", nullable=false)
      */
     protected $user;
 
     public function getTodo_id()
     {
         return $this->todo_id;
+    }
+
+    public function setIsEditable( $is_editable )
+    {
+        $this->isEditable = $is_editable;
+    }
+
+    public function getIsEditable()
+    {
+        return $this->isEditable;
     }
 
     public function setText($text)
@@ -79,5 +96,12 @@ class Todo extends BaseDoctrineModel
         return $this->status;
     }
 
+    public function setUser($user){
+        $this->user = $user;
+    }
+
+    public function getUser(){
+        return $this->user;
+    }
 
 }

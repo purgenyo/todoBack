@@ -5,6 +5,9 @@
 			<file>models/BaseModelTest.php</file>
 			<file>models/TodoModelTest.php</file>
 		</testsuite>
+        <testsuite name="Core">
+            <file>core/RequestTest.php</file>
+        </testsuite>
 	</testsuites>
 
 	<logging>

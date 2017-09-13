@@ -124,10 +124,51 @@ class BaseDoctrineModel
         return $attributes;
     }
 
+    /**
+     * Поиск записи по ID
+     * @param $id
+     * @return null|object
+     */
     public function findByPrimary($id){
-        /** @var \Doctrine\ORM\EntityManager $entManager */
-        $entManager = App::getDoctrineEntityManager();
-        return $entManager->find(get_class($this), $id);
+        /** @var \Doctrine\ORM\EntityManager $em */
+        $em = App::getDoctrineEntityManager();
+        return $em->find(get_class($this), $id);
     }
 
+    /**
+     * Удаляет по ID
+     * @param $id
+     * @return bool
+     */
+    public function deleteByPrimary($id){
+        $model = $this->findByPrimary( $id );
+        if(empty($model)){
+            return false;
+        }
+        /** @var \Doctrine\ORM\EntityManager $em */
+        $em = App::getDoctrineEntityManager();
+        $em->remove($model);
+        $em->flush();
+        return true;
+    }
+
+    /**
+     * Сохраняет данные
+     * @return $this
+     */
+    public function save(){
+        /** @var \Doctrine\ORM\EntityManager $em */
+        $em = App::getDoctrineEntityManager();
+        $meta = $em->getClassMetadata(get_class($this));
+        $identifier = $meta->getSingleIdentifierFieldName();
+        if(empty($this->{$identifier})){
+            $em = App::getDoctrineEntityManager();
+            $em->persist($this);
+            $em->flush();
+        } else {
+            $em->merge($this);
+            $em->flush();
+        }
+        return $this;
+    }
 }
