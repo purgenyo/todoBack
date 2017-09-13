@@ -109,4 +109,10 @@ class BaseDoctrineModel
         return $attributes;
     }
 
+    public function findByPrimary($id){
+        /** @var \Doctrine\ORM\EntityManager $entManager */
+        $entManager = App::getDoctrineEntityManager();
+        return $entManager->find(get_class($this), $id);
+    }
+
 }

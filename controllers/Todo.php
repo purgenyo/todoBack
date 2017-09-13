@@ -15,7 +15,7 @@ class Todo
         /** @var \Doctrine\ORM\EntityManager $entManager */
         $entManager = App::getDoctrineEntityManager();
         $todo = $entManager->getRepository('app\doctrineModels\Todo')
-            ->findBy(['status'=>1], ['todo_id'=>'DESC']);
+            ->findBy([], ['todo_id'=>'DESC']);
         if(empty($todo)){
             return [];
         } else {
@@ -51,7 +51,17 @@ class Todo
 
     function update( $todo_id )
     {
-        return $todo_id;
+        $model = new TodoModel();
+        $model = $model->findByPrimary( $todo_id );
+        if(empty($model)){
+            return false;
+        }
+        /** @var \Doctrine\ORM\EntityManager $em */
+        $em = App::getDoctrineEntityManager();
+        $model->setAttributes(Request::getRequest());
+        $em->merge($model);
+        $em->flush();
+        return $model->getAttributes();
     }
 
     function delete( $todo_id )

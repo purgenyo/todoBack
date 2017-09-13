@@ -31,7 +31,7 @@ class Todo extends BaseDoctrineModel
 
     /**
      * @OneToOne(targetEntity="User")
-     * @JoinColumn(name="user_id", referencedColumnName="user_id", nullable=false)
+     * @JoinColumn(name="user_id", referencedColumnName="user_id", nullable=true)
      */
     protected $user;
 
@@ -59,9 +59,5 @@ class Todo extends BaseDoctrineModel
         return $this->status;
     }
 
-    public function findByPrimary($id){
-        /** @var \Doctrine\ORM\EntityManager $entManager */
-        $entManager = App::getDoctrineEntityManager();
-        return $entManager->find(get_class($this), $id);
-    }
+
 }
