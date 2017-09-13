@@ -18,4 +18,8 @@ class Request
         $requestParser = new RequestParser($_SERVER['CONTENT_TYPE'], $input);
         return $requestParser->process();
     }
+
+    public static function getToken(){
+        
+    }
 }
