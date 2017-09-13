@@ -168,7 +168,7 @@ class RequestRouter
 
     private function runAction($controller, $action, $params = []){
 
-        $className = '\app\Controllers\\' . $controller;
+        $className = '\app\controllers\\' . $controller;
         if(!class_exists($className)){
             throw new \Exception('Контроллер не найден');
         }

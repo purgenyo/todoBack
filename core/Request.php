@@ -3,7 +3,7 @@
 namespace app\core;
 
 /**
- * Класс содержит методы обработки запросов
+ * Класс содержит методы обработки запросов, пока что обрабатываем только json
  *
  * Class Request
  * @package app\core
@@ -15,20 +15,7 @@ class Request
             throw new \Exception('Тип не поддерживается');
         }
         $input = file_get_contents('php://input');
-        return self::parseRequest($_SERVER['CONTENT_TYPE'], $input);
-    }
-
-    public static function parseRequest( $content_type, $input ){
-        if(preg_match('/(application\/json)/', $content_type)!==false){
-            $inputJSON = json_decode($input, true);
-            if(empty($inputJSON)){
-                http_response_code(400);
-                throw new \Exception('Ошибка в теле запроса');
-            }
-            return $inputJSON;
-        } else {
-            http_response_code(400);
-            throw new \Exception('Тип не поддерживается');
-        }
+        $requestParser = new RequestParser($_SERVER['CONTENT_TYPE'], $input);
+        return $requestParser->process();
     }
 }
