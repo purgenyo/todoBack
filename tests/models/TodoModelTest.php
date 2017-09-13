@@ -69,6 +69,8 @@ class TodoModelTest extends TestCase
                         'todo_id'=>null,
                         'text'=>'text',
                         'status'=>555,
+                        'updated'=>null,
+                        'created'=>null
                     ]
                 ]
             ],

@@ -22,6 +22,17 @@ use Doctrine\ORM\Mapping\PreUpdate;
 class BaseDoctrineModel
 {
 
+    public function allowSet(){
+        return [];
+    }
+
+    public function allowGet(){
+        return [
+            'updated',
+            'created'
+        ];
+    }
+
     public function __construct(){}
 
     /**
@@ -84,8 +95,9 @@ class BaseDoctrineModel
             ->getClassMetadata(get_class($this))
             ->getColumnNames();
 
+        $allow_set_attributes = $this->allowSet();
         foreach ($request_attributes as $field => $attribute){
-            if(in_array($field, $em_attributes)){
+            if(in_array($field, $em_attributes) && in_array($field, $allow_set_attributes)){
                 $setter = 'set'.ucfirst($field);
                 if(method_exists($this, $setter)){
                     $this->$setter($attribute);
@@ -99,9 +111,12 @@ class BaseDoctrineModel
             ->getClassMetadata(get_class($this))
             ->getColumnNames();
         $attributes = [];
+        $allow_get_attributes = $this->allowGet();
         foreach ($em_attributes as $field => $attribute){
+            if(!in_array($attribute, $allow_get_attributes)){
+                continue;
+            }
             $getter = 'get'.ucfirst($attribute);
-
             if(method_exists($this, $getter)){
                 $attributes[$attribute] = $this->$getter();
             }

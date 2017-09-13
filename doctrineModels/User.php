@@ -7,6 +7,17 @@ namespace app\doctrineModels;
  */
 class User extends BaseDoctrineModel
 {
+
+    /** Поля доступные для записи */
+    public $allow_set = [
+
+    ];
+
+    /** Поля доступные для чтения */
+    public $allow_get = [
+
+    ];
+
     /**
      * @Id @GeneratedValue @Column(type="integer")
      * @var integer

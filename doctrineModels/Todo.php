@@ -10,6 +10,26 @@ use app\App;
  */
 class Todo extends BaseDoctrineModel
 {
+
+    /** Поля доступные для записи */
+    public function allowSet(){
+        $allow_set = parent::allowSet();
+        $allow_set[] = 'text';
+        $allow_set[] = 'user';
+        $allow_set[] = 'status';
+        return $allow_set;
+    }
+
+    /** Поля доступные для чтения */
+    public function allowGet(){
+        $allow_get = parent::allowGet();
+        $allow_get[] = 'todo_id';
+        $allow_get[] = 'text';
+        $allow_get[] = 'status';
+        return $allow_get;
+    }
+
+
     /**
      * @var int
      * @Id
