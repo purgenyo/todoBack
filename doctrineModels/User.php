@@ -130,8 +130,10 @@ class User extends BaseDoctrineModel
             ->where('u.token = :token')
             ->setParameter('token', $token)
             ->getQuery()->getResult();
-        if(empty($result)){
+        if(empty($result[0])){
             return null;
         }
+
+        return $result[0];
     }
 }

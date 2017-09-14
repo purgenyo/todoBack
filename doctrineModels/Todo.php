@@ -30,7 +30,6 @@ class Todo extends BaseDoctrineModel
         return $allow_get;
     }
 
-
     /**
      * @var int
      * @Id
@@ -57,7 +56,7 @@ class Todo extends BaseDoctrineModel
     protected $isEditable = 1;
 
     /**
-     * @OneToOne(targetEntity="User")
+     * @ManyToOne(targetEntity="User")
      * @JoinColumn(name="user_id", referencedColumnName="user_id", nullable=false)
      */
     protected $user;

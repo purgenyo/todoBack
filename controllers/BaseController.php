@@ -41,7 +41,7 @@ class BaseController
         if(empty($user)){
             throw new \Exception('Ошибка авторизации');
         }
-        $this->setUser((new User)->getUserByToken($token));
+        $this->setUser($user);
         return true;
     }
 

@@ -47,6 +47,7 @@ class Todo extends BaseController
     {
         $todo = new TodoModel();
         $todo->setAttributes(Request::getRequest());
+        $todo->setUser($this->getUser());
         $todo->save();
         return $todo->getAttributes();
     }

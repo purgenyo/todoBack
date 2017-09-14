@@ -123,6 +123,7 @@ class RequestRouter
                 header('Access-Control-Allow-Methods: PUT, GET, POST, DELETE, OPTIONS');
                 header('Access-Control-Allow-Origin: *');
                 header('Content-Type: application/json');
+                header("Access-Control-Allow-Headers: Authorization, Content-Type");
                 die;
             }
             $result['data'] = $this->_process();
