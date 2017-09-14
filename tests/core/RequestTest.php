@@ -53,4 +53,29 @@ class RequestTest extends \PHPUnit\Framework\TestCase
             ['test', null],
         ];
     }
+
+    /**
+     * Типы данных
+     *
+     * @dataProvider headerParamsProvider
+     * @param $auth_params
+     * @param $token
+     * @internal param $result
+     */
+    public function testGetToken( $auth_params, $token ){
+        $_SERVER['Authorization'] = $auth_params;
+        $result = \app\core\Request::getToken();
+        $this->assertEquals($result, $token);
+    }
+
+    public function headerParamsProvider(){
+        return [
+            ['Bearer test', 'test'],
+            ['Bearer AGOIhj831yh9183h4onhouhAODUHgoahudg', 'AGOIhj831yh9183h4onhouhAODUHgoahudg'],
+            ['Bearer12', false],
+            ['Bearer', false],
+            ['bearer  4', false],
+            ['Bearer  4', false],
+        ];
+    }
 }

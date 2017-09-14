@@ -28,11 +28,11 @@ class RequestRouter
         405  // Method Not Allowed
     ];
 
-    function __construct()
+    function __construct( $config_array )
     {
+        $this->_setConfig($config_array);
         $this->_setMethod();
         $this->_setPathInfo();
-
     }
 
     /** HTTP URL запроса */
@@ -40,6 +40,9 @@ class RequestRouter
 
     /** HTTP Метод */
     private $_method;
+
+    /** router config */
+    private $_config;
 
     private function _getRoute(){
         $collections = $this->createRouteCollections();
@@ -67,7 +70,7 @@ class RequestRouter
     }
 
     public function createRouteCollections(){
-        $router_map = App::getRouterConfig();
+        $router_map = $this->_getConfig();
         $routers_collections = [];
         foreach ($router_map as $controller_id => $controller_methods){
             $routes = new RouteCollection();
@@ -144,6 +147,14 @@ class RequestRouter
 
         echo json_encode($result);
         die;
+    }
+
+    private function _getConfig(){
+        return $this->_config;
+    }
+
+    private function _setConfig( $config ){
+        $this->_config = $config;
     }
 
     private function _setMethod(){

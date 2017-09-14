@@ -7,6 +7,7 @@
 		</testsuite>
         <testsuite name="Core">
             <file>core/RequestTest.php</file>
+            <file>core/RequestRouterTest.php</file>
         </testsuite>
 	</testsuites>
 
