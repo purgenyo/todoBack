@@ -10,6 +10,11 @@ class BaseController
     private $_user = null;
     private $_action = null;
 
+    /**
+     * Методы доступные без авторизации
+     *
+     * @return array
+     */
     public function accessActions(){
         return [];
     }
@@ -19,6 +24,9 @@ class BaseController
 
     }
 
+    /**
+     * @throws \Exception
+     */
     public function beforeRun(){
         if(!($this->processUserAccess())){
             http_response_code(403);
@@ -26,6 +34,11 @@ class BaseController
         }
     }
 
+    /**
+     * Проверка авторизации пользователя
+     * @return bool
+     * @throws \Exception
+     */
     public function processUserAccess(){
 
         if(in_array($this->getAction(), $this->accessActions())){
@@ -44,8 +57,6 @@ class BaseController
         $this->setUser($user);
         return true;
     }
-
-    public $entityModel = '';
 
     public function setAction($action){
         $this->_action = $action;

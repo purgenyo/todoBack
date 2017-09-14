@@ -90,6 +90,12 @@ class BaseDoctrineModel
         return $this->updated;
     }
 
+    /**
+     * Заполняет поля разрешённые поля модели
+     *
+     * @param $request_attributes
+     * @throws \Exception
+     */
     public function setAttributes($request_attributes){
         $em_attributes = App::getDoctrineEntityManager()
             ->getClassMetadata(get_class($this))
@@ -106,6 +112,12 @@ class BaseDoctrineModel
         }
     }
 
+    /**
+     * Получает разрешенные аттрибуты модели
+     *
+     * @return array
+     * @throws \Exception
+     */
     public function getAttributes(){
         $em_attributes = App::getDoctrineEntityManager()
             ->getClassMetadata(get_class($this))

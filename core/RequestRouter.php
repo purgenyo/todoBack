@@ -194,7 +194,6 @@ class RequestRouter
 
         $class->setAction($action);
         $class->beforeRun();
-
         return call_user_func_array([$class, $action], $params);
     }
 }
