@@ -14,7 +14,7 @@ namespace app\core;
  * Class RequestParser
  * @package app\core
  */
-class RequestParser
+class BodyParser
 {
     private $_processor = null;
     private $_body = null;

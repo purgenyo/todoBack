@@ -7,15 +7,20 @@ use app\App;
 use app\core\Request;
 use app\doctrineModels\Todo as TodoModel;
 
-class Todo
+class Todo extends BaseController
 {
+    public function accessActions()
+    {
+        return parent::accessActions();
+    }
 
     public function read()
     {
         /** @var \Doctrine\ORM\EntityManager $entManager */
         $entManager = App::getDoctrineEntityManager();
         $todo = $entManager->getRepository('app\doctrineModels\Todo')
-            ->findBy([], ['todo_id'=>'DESC']);
+            ->findBy([
+            ], ['todo_id'=>'DESC']);
         if(empty($todo)){
             return [];
         } else {

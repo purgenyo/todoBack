@@ -16,5 +16,11 @@ return [
             ''=>'read',
             'todo_id:\d+'=>'readOne'
         ]
+    ],
+    'user'=>[
+        'POST'=>[
+            'registration'=>'registration',
+            'login'=>'login'
+        ]
     ]
 ];

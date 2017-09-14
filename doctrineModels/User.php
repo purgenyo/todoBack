@@ -1,22 +1,31 @@
 <?php
 
 namespace app\doctrineModels;
+use app\App;
+use Doctrine\ORM\QueryBuilder;
 
 /**
  * @Entity @Table(name="users")
  */
 class User extends BaseDoctrineModel
 {
-
     /** Поля доступные для записи */
-    public $allow_set = [
-
-    ];
+    public function allowSet(){
+        $allow_set = parent::allowSet();
+        $allow_set[] = 'user_id';
+        $allow_set[] = 'username';
+        $allow_set[] = 'password';
+        return $allow_set;
+    }
 
     /** Поля доступные для чтения */
-    public $allow_get = [
-
-    ];
+    public function allowGet(){
+        $allow_get = parent::allowGet();
+        $allow_get[] = 'user_id';
+        $allow_get[] = 'username';
+        $allow_get[] = 'token';
+        return $allow_get;
+    }
 
     /**
      * @Id @GeneratedValue @Column(type="integer")
@@ -61,6 +70,10 @@ class User extends BaseDoctrineModel
         $this->username = $username;
     }
 
+    public function getPasswordHash( $password ){
+        return md5($password);
+    }
+
     public function getPassword()
     {
         return $this->password;
@@ -68,7 +81,7 @@ class User extends BaseDoctrineModel
     
     public function setPassword($password)
     {
-        $this->password = md5($password);
+        $this->password = $password;
     }
 
     public function setToken(){
@@ -77,5 +90,48 @@ class User extends BaseDoctrineModel
     
     public function getToken(){
         return $this->token;
+    }
+
+    public function login(){
+        /** @var \Doctrine\ORM\EntityManager $entManager */
+        $em = App::getDoctrineEntityManager();
+        /** @var QueryBuilder $qb */
+        $qb = $em->createQueryBuilder();
+        $result = $qb->select(['u'])
+            ->from(get_class($this), 'u')
+            ->where('u.username = :username and u.password = :password')
+            ->setParameter('username', $this->getUsername())
+            ->setParameter('password', $this->getPasswordHash($this->getPassword()))
+            ->getQuery()->getResult();
+        //return $result;
+        if(empty($result[0])){
+            throw new \Exception('Ошибка авторизации');
+        }
+
+        $result = $result[0];
+        $result->setToken();
+        $result->save();
+        return $result;
+    }
+
+    public function beforePersist()
+    {
+        $this->setPassword($this->getPasswordHash($this->getPassword()));
+        parent::beforePersist();
+    }
+
+    public function getUserByToken( $token ){
+        /** @var \Doctrine\ORM\EntityManager $entManager */
+        $em = App::getDoctrineEntityManager();
+        /** @var QueryBuilder $qb */
+        $qb = $em->createQueryBuilder();
+        $result = $qb->select(['u'])
+            ->from(get_class($this), 'u')
+            ->where('u.token = :token')
+            ->setParameter('token', $token)
+            ->getQuery()->getResult();
+        if(empty($result)){
+            return null;
+        }
     }
 }

@@ -24,6 +24,7 @@ class RequestRouter
         201, // Created
         400, // Bad Request
         404, // Not Found
+        403, // Not Found
         405  // Method Not Allowed
     ];
 
@@ -122,12 +123,13 @@ class RequestRouter
                 die;
             }
             $result['data'] = $this->_process();
-            if(empty($result['status'])){
-                $result['status'] = http_response_code();
-            }
+            $result['status'] = http_response_code();
         } catch (\Exception $e){
             $result = [];
-            $result['status'] = 400;
+            $result['status'] = http_response_code();
+            if($result['status'] < 400){
+                $result['status'] = 400;
+            }
             $result['error'] = $e->getMessage();
         }
 
@@ -177,6 +179,9 @@ class RequestRouter
         if(!method_exists($class, $action)){
             throw new \Exception('Метод не существует');
         }
+
+        $class->setAction($action);
+        $class->beforeRun();
 
         return call_user_func_array([$class, $action], $params);
     }
