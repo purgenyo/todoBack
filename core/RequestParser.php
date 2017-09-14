@@ -26,7 +26,7 @@ class RequestParser
     }
 
     public function process(){
-        if($this->_getProcessor()==='json'){
+        if($this->getProcessorType()==='json'){
             return $this->processJson($this->_getBody());
         }
         throw new \Exception('Формат данных не поддерживается');
@@ -34,7 +34,7 @@ class RequestParser
 
     private function processJson( $bodyJSON ){
         $bodyJSON = json_decode($bodyJSON, true);
-        if(empty($bodyJSON)){
+        if($bodyJSON===null){
             http_response_code(400);
             throw new \Exception('Ошибка в теле запроса');
         }
@@ -43,15 +43,19 @@ class RequestParser
 
     private function _getProcessor($content_type){
         if(empty($this->_processor)){
-            if(preg_match('/(application\/json)/', $content_type)!==false){
-                return 'json';
+            if(preg_match('/(application\/json)/', $content_type)!=0){
+                $this->_processor = 'json';
             }
-        } else {
-            return $this->_processor;
         }
+
+        return $this->_processor;
     }
 
     private function _getBody(){
         return $this->_body;
+    }
+
+    public function getProcessorType(){
+        return $this->_processor;
     }
 }
