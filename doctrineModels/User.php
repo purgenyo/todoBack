@@ -52,10 +52,13 @@ class User extends BaseDoctrineModel
     protected $token;
 
     /**
-     * @ManyToMany(targetEntity="TodoShare", inversedBy="todoShare", cascade={"persist"})
+     * @ManyToMany(targetEntity="TodoShare", inversedBy="todoShare", cascade={"remove", "persist"})
      * @JoinTable(name="todo_share_link",
-     * joinColumns={@JoinColumn(name="user_id", referencedColumnName="user_id")},
-     * inverseJoinColumns={@JoinColumn(name="todo_share_id", referencedColumnName="id")}
+     * joinColumns={
+     *     @JoinColumn(name="user_id", referencedColumnName="user_id", onDelete="CASCADE"),
+     * },
+     * inverseJoinColumns={
+     *     @JoinColumn(name="todo_share_id", referencedColumnName="todo_share_id", onDelete="CASCADE")}
      * )
      */
     protected $todoShare;

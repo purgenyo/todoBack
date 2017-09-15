@@ -20,6 +20,7 @@ class Todo extends BaseController
         $entManager = App::getDoctrineEntityManager();
         $todo = $entManager->getRepository('app\doctrineModels\Todo')
             ->findBy([
+                'user'=>$this->getUser()
             ], ['todo_id'=>'DESC']);
         if(empty($todo)){
             return [];
