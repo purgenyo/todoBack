@@ -50,6 +50,15 @@ class User extends BaseDoctrineModel
      * @var string
      */
     protected $token;
+
+    /**
+     * @ManyToMany(targetEntity="TodoShare", inversedBy="todoShare", cascade={"persist"})
+     * @JoinTable(name="todo_share_link",
+     * joinColumns={@JoinColumn(name="user_id", referencedColumnName="user_id")},
+     * inverseJoinColumns={@JoinColumn(name="todo_share_id", referencedColumnName="id")}
+     * )
+     */
+    protected $todoShare;
     
     public function __construct(){
         parent::__construct();

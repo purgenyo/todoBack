@@ -201,7 +201,6 @@ class TodoModelTest extends TestCase
             ['user'],
             ['updated'],
             ['created'],
-            ['isEditable'],
         ];
     }
 

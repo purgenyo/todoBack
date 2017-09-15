@@ -45,21 +45,17 @@ class Todo extends BaseDoctrineModel
 
     /**
      * @var int
-     * @Column(type="integer", nullable=false, options={"default": 1})
+     * @Column(type="smallint", nullable=false, options={"default": 1})
      */
     protected $status = 1;
 
-    /**
-     * @var int
-     * @Column(name="is_editable", type="smallint", nullable=false, options={"default": 1})
-     */
-    protected $isEditable = 1;
 
     /**
      * @ManyToOne(targetEntity="User")
      * @JoinColumn(name="user_id", referencedColumnName="user_id", nullable=false)
      */
     protected $user;
+
 
     public function getTodo_id()
     {
