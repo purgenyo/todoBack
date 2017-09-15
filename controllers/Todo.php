@@ -69,6 +69,4 @@ class Todo extends BaseController
         $model = new TodoModel();
         return $model->deleteByPrimary($todo_id);
     }
-
-
 }

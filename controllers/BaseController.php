@@ -29,7 +29,7 @@ class BaseController
      */
     public function beforeRun(){
         if(!($this->processUserAccess())){
-            http_response_code(403);
+            http_response_code(401);
             throw new \Exception('Доступ закрыт');
         }
     }
@@ -47,11 +47,12 @@ class BaseController
 
         $token = Request::getToken();
         if($token===false){
-            http_response_code(403);
+            http_response_code(401);
             throw new \Exception('Доступ закрыт');
         }
         $user = (new User)->getUserByToken($token);
         if(empty($user)){
+            http_response_code(401);
             throw new \Exception('Ошибка авторизации');
         }
         $this->setUser($user);
