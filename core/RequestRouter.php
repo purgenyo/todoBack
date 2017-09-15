@@ -23,6 +23,7 @@ class RequestRouter
         200, // OK
         201, // Created
         400, // Bad Request
+        401, // Bad Request
         404, // Not Found
         403, // Not Found
         405  // Method Not Allowed
@@ -120,6 +121,7 @@ class RequestRouter
 
         try {
             if($this->_method=='OPTIONS'){
+                //TODO: забирать методы из $this->httpStatuses
                 header('Access-Control-Allow-Methods: PUT, GET, POST, DELETE, OPTIONS');
                 header('Access-Control-Allow-Origin: *');
                 header('Content-Type: application/json');
